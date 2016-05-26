@@ -21,31 +21,22 @@ function submitCourse(){
 function clickTeacher(){
 	var radioGroup = jQuery("[name=myradiogroup]",document);
 	chosenRadio = jQuery(radioGroup[0]);
-	var match = localStorage.getItem("conditionMatch");
-	if (match == "true") {
-		var radioIndex = localStorage.getItem("lessonPosition");
-		console.log(radioIndex);
-		var row = radioGroup[radioIndex].parentElement.parentElement.parentElement;
-		var isFull = row.children[11].innerHTML.toString().trim();
-		chosenRadio = jQuery(radioGroup[radioIndex]);
-		chosenRadio.trigger("click");
-		localStorage.setItem("state", "submit");
-		jQuery("input[value=选定此教师]").trigger("click");
-		return 1;//success
-	} else {
-
 	for(var radioIndex = 0; radioIndex < radioGroup.length ; radioIndex++){//click
 		var row = radioGroup[radioIndex].parentElement.parentElement.parentElement;
 		var isFull = row.children[11].innerHTML.toString().trim();
-
-		if (isFull == "人数未满"){
+		var teacherName = row.children[1].innerHTML.toString().trim();
+		var teacherWanted = localStorage.getItem("teacher");
+		var timeWanted = localStorage.getItem("time");
+		var pick = true;
+		if (selectTeacher == "true") 
+			pick = (teacherName.search(teacherWanted) != -1);
+		if (pick && (isFull == "人数未满")){
 			chosenRadio = jQuery(radioGroup[radioIndex]);
 			chosenRadio.trigger("click");
 			localStorage.setItem("state","submit");
 			jQuery("input[value=选定此教师]").trigger("click");
 			return 1;//success
 		}
-	}
 	}
 	return 0;	
 }
@@ -595,8 +586,7 @@ function conditionalProcessArrangement(html, lid, condition)
 	console.log(timeCondition);
 
 	for(x = 0; x < trs.length; x++){
-		var l = {"lid" : lid, "now" : Number(trs.slice(x,x+1).children().slice(8,9).text()), 
-		"max" : Number(trs.slice(x,x+1).children().slice(5,6).text()), "teacher": trs.slice(x,x+1).children().slice(1,2).text() };
+		var l = {"lid" : lid, "now" : Number(trs.slice(x,x+1).children().slice(8,9).text()), "max" : Number(trs.slice(x,x+1).children().slice(5,6).text()), "teacher": trs.slice(x,x+1).children().slice(1,2).text() };
         l.arrange = Trim(trs.slice(x,x+1).children().slice(9,10).text(),"g")
 		l.times = []
 		pattern = new RegExp("星期(.*?)第(.*?)节--第(.*?)节","ig");
@@ -634,8 +624,7 @@ function conditionalProcessArrangement(html, lid, condition)
 				full = 1;
 			//console.log(l.lid);
 			var teacherMatch = 0;
-			console.log(l.teacher);
-			if (teacherCondition.length == 0) teacherMatch = 1;
+			if (l.teacher.length == 0) teacherMatch = 1;
 			else if (l.teacher.search(teacherCondition) != -1)
 				teacherMatch = 1;
 			
@@ -659,18 +648,18 @@ function conditionalProcessArrangement(html, lid, condition)
 	// console.log(lessons);
 
 	lessontr.attr("lid",lid);
-	var ok_identifier = -1;
-	var matchAtLeastOnce = 0;
+	var full_identifier = 1;
+	var match_identifier = 1;
 	for(x=0; x < lessons.length; x++){
 		times = lessons[x].times;
 		//console.log(time);
 		for(y=0; y < times.length;y++)
 		{
 			time = times[y];
-			if (time.full == 0 && time.teacherMatch == 1 && time.timeMatch == 1)
-				ok_identifier = x;
-			if (time.teacherMatch == 1 && time.timeMatch == 1)
-				matchAtLeastOnce = 1;
+			if(time.full == 0)
+				full_identifier = 0;
+			if (time.teacherMatch == 0 || time.timeMatch == 0)
+				match_identifier = 0;
 			
 			attrtag = document.createElement("div");
 			attrtag.setAttribute("class","attrtag");
@@ -693,27 +682,19 @@ function conditionalProcessArrangement(html, lid, condition)
 		return;
 	}
 
-	if (matchAtLeastOnce == 0) {
-		fullspan.setAttribute("style", "color:yellow");
-		fullspan.innerHTML = "没有课程符合条件！";
-		return;
-	}
-
-	if(ok_identifier == -1)
+	if(full_identifier == 1 && match_identifier == 1)
 	{
 		fullspan.setAttribute("style","color:gray");
-		fullspan.innerHTML = "该老师/该时间满";
+		fullspan.innerHTML = "有";
 	}
 	else
 	{
-		fullspan.setAttribute("style","color:red");
-		fullspan.innerHTML = "有";
+		fullspan.setAttribute("style","color:blue");
+		fullspan.innerHTML = "没有该老师/该时间";
 		if(document.pickCourse){
 			clearAllInterval();
 			lessontr.find("[name='myradiogroup']")[0].click();
 		}
-		localStorage.setItem("lessonPosition", ok_identifier);
-		localStorage.setItem("conditionMatch", "true");
 	}
 	if(jQuery("tr",tablelsn).length < 2 )
 	{

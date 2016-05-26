@@ -68,53 +68,74 @@ function getSemester(){
     return;
 }
 
+
 getSemester();
+//function setValue(value){
+//	chrome.runtime.sendMessage({set:true,content:value}, function(response){;});
+//	}
 
 function main()
 {
 	jQuery.noConflict();
 	jQuery(document).ready(function(){
-        
-		base_url = document.URL.slice(0,document.URL.indexOf("sjtu.edu.cn") + 11);
+		base_url = document.URL.slice(0,document.URL.indexOf("sjtu.edu.cn") + 11);//lesson中用到
 		
 		//设置首页checkbox
-		set_index_page();
+		set_index_page(); // in login_page.js
 		//优化左边菜单栏 
-		set_left_scroll();
+		set_left_scroll();//in lesson.js
 		//优化左边折叠栏
-		optimize_sdtleft();
+		optimize_sdtleft();//in optimize.js
 		//优化上栏
-		optimize_flattop();
+		optimize_flattop(); // in optimize.js
 		optimize_flattop_content();
 		//优化选课（重点）  
-		optimize_elect();
-		
-		//成绩查询
-		optimize_score_query();
-		//绩点查询
-		optimize_gpa_query();
-		//首页显示成绩
-		//index_show_score_query();
-        //修业查看中计算总绩点
-        optimize_myEductionList();
+		optimize_elect(); // in lesson.js
+		if(jQuery("[value=快速退课]").length>0){//进入了选课界面
+			
+			//if(bgValue("mode") == "开启"){// autoSelect in passData.js
+				//if(robCourse()==0){// lesson.js
+				//	jQuery("[name=main]").load('elect/warning.aspx?xklc=2&lb=3',function(responseTxt,statusTxt,xhr){
+				//		if(statusTxt=="success") alert("外部内容加载成功！");
+				//		if(statusTxt=="error") alert("Error: "+xhr.status+": "+xhr.statusText);
+				//		});
+				//}}
+			if(localStorage.getItem("state")=="submit"){
+				submitCourse();
+				localStorage.setItem("state","on");
+			}else if(document.state!="off"){document.state="on";}
+			//chrome.runtime.sendMessage({check:true,content:"submit"},function(response){
+			//	if(response){
+			//		submitCourse();
+			//		setValue("on");//lesson.js
+			//	}
+			//});
+		}	
+		if(jQuery("[value=查看教师信息]").length>0){//选教师界面 
+			//chrome.runtime.sendMessage({check:true,content:"off"},function(response){
+			//	if(!response)clickTeacher();});
+			if(localStorage.getItem("state")!="off") clickTeacher();
+		 }	
+		 
+
+		jQuery("#CheckBox1").attr("checked","checked");
+//		jQUery("#btnContinue").click();
 
 		//快速评教
 		fast_eval_index();
 		fast_eval_process();
         
-        //快速评教，期中
+     
+		//快速评教，期中
         fast_eval_midterm_index () ;
         fast_eval_midterm_process();
 		
-		// NHCE - -
-		nhce_main();
 	});
 }
 
 
-
-
 main(); 
+
 
 
 

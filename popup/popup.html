@@ -17,35 +17,32 @@ table{border:solid 0px gray; font-size:9px;width:200px;text-align:center;}
 </style>
 <script src="../content_script/jquery-1.6.1.min.js"> </script>
 <script src="../library/electsys.js"> </script>
+<script src="popup.js"></script>
 
-<script type="text/javascript">
-
-$(document).ready(function(){
-
-$.get(
-    chrome.extension.getURL("manifest.json"),
-    function(data){
-        $("#version_span").text(data);
-    },
-    "html"
-);
-
-});//document.ready
-
-</script>
 </head>
 <body>
 <div class="main">
-  Electsys++ <span id="version_span"></span><a href="http://electsys.net/electsys/what-is-electsys.html" target="_blank" class="right">帮助</a> <br />
+  三文鱼选课 <span id="version_span"></span><br />
 <hr />
-	<span>Updated everytime.<p></span>
-	<span style="float:right;">
-	laohyx&copy;2011-2013</span>
-    <span style="float:right;">
-    tq5124&copy;2014-?</span>
+<li><p id="debugP"></p></li>
+<li id="enabled" class="menu-item">
+    <button id="auto_select">开启/关闭一键选课提交</button> <p id="show_auto"></p>
+</li>
+<li >
+	<button id="wlist_on">开启/关闭白名单过滤</button><p id="show_wlist"></p><br/><p>开启本功能后，将自动刷新您添加到白名单中的课程，若有空出则自动抢选。</p><br/>
+	<input type="text" id="wlist_input" placeholder="在这里加课号"></input>
+	<button id="wlist_submit">添加</button>
+</li>
+<li id="information" >
+	<span>0.2版说明：1.开启一键选课提交后可完成所有课程的一键选课并提交；2.不处理时间冲突，因此可能会有提交失败3.可以选择一部分课程刷新信息，刷到未满的课程后请等约0.6秒后再点击抢课<p></span>
+</li>
+<li>
+	<span style="float:right;">&copy;本插件基于Electsys++ 2.4改写</span>
+</li>
 <div class="clear"></div>
 
 </div> 
 </body>
 
 </html>
+
